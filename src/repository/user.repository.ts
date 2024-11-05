@@ -13,9 +13,9 @@ class UserRepository extends GenericRepository<IUser> {
         });
     }
 
-    async findByIdentifyNumber(identifyNumber: string): Promise<IUser | null> {
+    async findByIdentityNumber(identityNumber: string): Promise<IUser | null> {
         return User.findOne({
-            identifyNumber
+            identityNumber
         })
     }
 
@@ -24,7 +24,7 @@ class UserRepository extends GenericRepository<IUser> {
             $or: [
                 {userName: data.userName},
                 {accountNumber: data.accountNumber},
-                {identifyNumber: data.identifyNumber},
+                {identityNumber: data.identityNumber},
                 {emailAddress: data.emailAddress}
             ]
         })

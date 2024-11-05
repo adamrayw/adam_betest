@@ -32,8 +32,8 @@ class UserService {
         return this.userRepository.findByAccountNumber(accountNumber);
     }
 
-    async findByIdentifyNumber(identifyNumber: string): Promise<IUser | null> {
-        return this.userRepository.findByIdentifyNumber(identifyNumber);
+    async findByIdentityNumber(identityNumber: string): Promise<IUser | null> {
+        return this.userRepository.findByIdentityNumber(identityNumber);
     }
     
     async checkIfDataExist(data: IUser): Promise<IUser | null> {

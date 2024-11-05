@@ -5,7 +5,7 @@ interface IUser extends mongoose.Document {
     userName: string,
     accountNumber: number,
     emailAddress: string,
-    identifyNumber: number
+    identityNumber: number
 }
 
 export default IUser;

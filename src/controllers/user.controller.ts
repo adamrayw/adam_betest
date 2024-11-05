@@ -36,15 +36,15 @@ class UserController {
     }
 
     async findAll(req: Request, res: Response, next: NextFunction) {
-        const { accountNumber, identifyNumber } = req.query
+        const { accountNumber, identityNumber } = req.query
 
         try {
             let users;
 
             if (typeof accountNumber === 'string' && accountNumber !== "") {
                 users = await this.userService.findByAccountNumber(accountNumber)
-            } else if (typeof identifyNumber === 'string' && identifyNumber !== "") {
-                users = await this.userService.findByIdentifyNumber(identifyNumber)
+            } else if (typeof identityNumber === 'string' && identityNumber !== "") {
+                users = await this.userService.findByIdentityNumber(identityNumber)
             } else {
                 users = await this.userService.findAll();
             }

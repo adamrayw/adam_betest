@@ -43,7 +43,7 @@ describe("Test CRUD API", () => {
                 userName: "testBaru",
                 accountNumber: "0323923823",
                 emailAddress: "testbaru@gmail.com",
-                identifyNumber: "392832"
+                identityNumber: "392832"
             })
             .set("Authorization", `Bearer ${token}`);
 

@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    identifyNumber: {
+    identityNumber: {
         type: Number,
         required: true,
         unique: true
