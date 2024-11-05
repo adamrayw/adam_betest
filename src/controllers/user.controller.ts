@@ -49,7 +49,7 @@ class UserController {
                 users = await this.userService.findAll();
             }
 
-            const producer = this.kafkaClient.kafka
+            const producer = this.kafkaClient.kafkaProducer
 
             await producer.send({
                 topic: "kafka_adam_betest",
