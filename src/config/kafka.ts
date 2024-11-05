@@ -1,8 +1,9 @@
-import { Kafka, Producer } from "kafkajs";
+import { Consumer, Kafka, Producer } from "kafkajs";
 
 class KafkaClient {
     private readonly kafkaProducer: Kafka;
     public readonly kafka: Producer;
+    public readonly kafkaConsumer: Consumer;
 
     constructor() {
         this.kafkaProducer = new Kafka({
@@ -10,7 +11,20 @@ class KafkaClient {
             brokers: ['kafka-broker.railway.internal:9092']
         })
         this.kafka = this.kafkaProducer.producer();
+        this.kafkaConsumer = this.kafkaProducer.consumer({
+            groupId: "test-group"
+        });
+        this.kafkaConsumer.subscribe({topic: 'kafka_adam_betest'});
         this.kafkaConnect();
+        this.kafkaConsume();
+    }
+
+    async kafkaConsume() {
+        await this.kafkaConsumer.run(({
+            eachMessage: async ({ topic, partition, message}) => {
+                console.log(`Order received! : ${message.value.toString()}`)
+            }
+        }))
     }
 
     async kafkaConnect() {

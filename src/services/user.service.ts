@@ -28,12 +28,16 @@ class UserService {
         return this.userRepository.delete(id);
     }
 
-    async findByEmail(email: string): Promise<IUser | null> {
-        return this.userRepository.findByEmail(email);
+    async findByAccountNumber(accountNumber: string): Promise<IUser | null> {
+        return this.userRepository.findByAccountNumber(accountNumber);
     }
 
-    async findByName(name: string): Promise<IUser | null> {
-        return this.userRepository.findByName(name);
+    async findByIdentifyNumber(identifyNumber: string): Promise<IUser | null> {
+        return this.userRepository.findByIdentifyNumber(identifyNumber);
+    }
+    
+    async checkIfDataExist(data: IUser): Promise<IUser | null> {
+        return this.userRepository.checkIfUserExist(data)
     }
 }
 

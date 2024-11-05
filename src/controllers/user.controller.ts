@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import IUser from "../interfaces/user.interface"; 
+import IUser from "../interfaces/user.interface";
 import KafkaClient from "../config/kafka";
 import UserService from "../services/user.service";
 
@@ -15,16 +15,16 @@ class UserController {
     async create(req: Request, res: Response) {
         try {
             const data: IUser = req.body;
+
+            const existingUser = await this.userService.checkIfDataExist(data);
+
+            if (existingUser) {
+                return res.status(400).json({
+                    message: "One of the fields already exists."
+                });
+            }
+
             const user = await this.userService.create(data);
-
-            const producer = this.kafkaClient.kafka;
-
-            await producer.send({
-                topic: "kafka_adam_betest",
-                messages: [{
-                    value: JSON.stringify(user)
-                }]
-            })
 
             res.status(201).json({
                 message: "New user created succcessfully!",
@@ -36,8 +36,28 @@ class UserController {
     }
 
     async findAll(req: Request, res: Response) {
+        const { accountNumber, identifyNumber } = req.query
+
         try {
-            const users = await this.userService.findAll();
+            let users;
+
+            if (typeof accountNumber === 'string' && accountNumber !== "") {
+                users = await this.userService.findByAccountNumber(accountNumber)
+            } else if (typeof identifyNumber === 'string' && identifyNumber !== "") {
+                users = await this.userService.findByIdentifyNumber(identifyNumber)
+            } else {
+                users = await this.userService.findAll();
+            }
+
+            const producer = this.kafkaClient.kafka
+
+            await producer.send({
+                topic: "kafka_adam_betest",
+                messages: [{
+                    value: JSON.stringify(users)
+                }]
+            })
+
             res.status(200).json({
                 message: "Success get all users!",
                 data: users
@@ -84,8 +104,18 @@ class UserController {
             })
 
         } catch (error) {
-            throw new Error(error as string)
-        }   
+            if (error.code === 11000) {
+                // Handle duplicate key error
+                return res.status(400).json({
+                    message: "One of the fields already exists.",
+                });
+            }
+    
+            res.status(500).json({
+                message: "Failed to update user",
+                error: error instanceof Error ? error.message : "Unknown error"
+            });
+        }
     }
 }
 

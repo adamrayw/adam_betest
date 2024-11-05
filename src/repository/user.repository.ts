@@ -7,15 +7,26 @@ class UserRepository extends GenericRepository<IUser> {
         super(User)
     }
 
-    async findByEmail(email: string): Promise<IUser | null> {
+    async findByAccountNumber(accountNumber: string): Promise<IUser | null> {
         return User.findOne({
-            emailAddress: email
+            accountNumber
         });
     }
 
-    async findByName(name: string): Promise<IUser | null> {
+    async findByIdentifyNumber(identifyNumber: string): Promise<IUser | null> {
         return User.findOne({
-            userName: name
+            identifyNumber
+        })
+    }
+
+    async checkIfUserExist(data: IUser): Promise<IUser | null> {
+        return User.findOne({
+            $or: [
+                {userName: data.userName},
+                {accountNumber: data.accountNumber},
+                {identifyNumber: data.identifyNumber},
+                {emailAddress: data.emailAddress}
+            ]
         })
     }
 }
