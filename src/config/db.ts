@@ -4,7 +4,7 @@ class Database {
     private readonly URI: string;
 
     constructor() {
-        this.URI = process.env.MONGO_URI || "mongodb+srv://adam:adam123@cluster0.lvhvg.mongodb.net/";
+        this.URI = process.env.MONGO_URI;
         this.connect();
     }
 
