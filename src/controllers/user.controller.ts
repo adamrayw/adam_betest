@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import IUser from "../interfaces/user.interface";
 import KafkaClient from "../config/kafka";
 import UserService from "../services/user.service";
@@ -12,7 +12,7 @@ class UserController {
         this.kafkaClient = new KafkaClient();
     }   
 
-    async create(req: Request, res: Response) {
+    async create(req: Request, res: Response, next: NextFunction) {
         try {
             const data: IUser = req.body;
 
@@ -31,11 +31,11 @@ class UserController {
                 data: user
             });
         } catch (error: unknown) {
-            throw new Error(error as string);
+            next(error);
         }
     }
 
-    async findAll(req: Request, res: Response) {
+    async findAll(req: Request, res: Response, next: NextFunction) {
         const { accountNumber, identifyNumber } = req.query
 
         try {
@@ -63,40 +63,49 @@ class UserController {
                 data: users
             });
         } catch (error) {
-            throw new Error(error as string);
+            next(error);
         }
     }
 
-    async findById(req: Request, res: Response) {
+    async findById(req: Request, res: Response, next: NextFunction) {
         const id: string = req.params.id;
 
         try {
             const user = await this.userService.findById(id)
             res.status(200).json(user);
         } catch (error) {
-            throw new Error(error as string);
+            next(error);
         }
     }
 
-    async delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response, next: NextFunction) {
         const id: string = req.params.id;
 
         try {
             const user = await this.userService.delete(id);
+            
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+
             res.status(200).json({
                 message: "User deleted successfully!"
             });
         } catch (error) {
-            throw new Error(error as string);
+            next(error);
         }
     }
 
-    async update(req: Request, res: Response) {
+    async update(req: Request, res: Response, next: NextFunction) {
         const data: IUser = req.body;
         const id: string = req.params.id
 
         try {
             const user = await this.userService.update(id, data);
+
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
 
             res.status(200).json({
                 message: "User updated successfully!",
@@ -104,17 +113,10 @@ class UserController {
             })
 
         } catch (error) {
-            if (error.code === 11000) {
-                // Handle duplicate key error
-                return res.status(400).json({
-                    message: "One of the fields already exists.",
-                });
+            if ((error as any).code === 11000) {
+                return res.status(400).json({ message: "One of the fields already exists." });
             }
-    
-            res.status(500).json({
-                message: "Failed to update user",
-                error: error instanceof Error ? error.message : "Unknown error"
-            });
+            next(error);
         }
     }
 }
