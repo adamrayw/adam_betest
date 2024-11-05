@@ -1,6 +1,4 @@
 
-import App from "./app";
+import appInstance from "./app";
 
-const app = new App();
-
-app.listen();
+appInstance.listen();

@@ -8,7 +8,7 @@ import UserRoute from "./routes/user.route";
 import TokenRoute from "./routes/token.route";
 
 class App {
-    private readonly app: Application;
+    public app: Application;
     private readonly port: number;
 
     constructor() {
@@ -53,4 +53,6 @@ class App {
     }
 }
 
-export default App;
+const appInstance = new App();
+export const server = appInstance.app; 
+export default appInstance; 
